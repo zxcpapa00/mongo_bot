@@ -1,16 +1,11 @@
 from datetime import datetime
 
 import pymongo
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
+from config import USER_NAME, USER_PASS
 
 
 def payments(dt_from, dt_upto, group_type):
-    USER_NAME = os.getenv("USER_NAME")
-    USER_PASS = os.getenv("USER_PASS")
-
     client = (
         pymongo.mongo_client.MongoClient(
             f"mongodb+srv://{USER_NAME}:{USER_PASS}@cluster0.gmpmurs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
