@@ -1,8 +1,24 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pymongo
 
 from config import USER_NAME, USER_PASS
+
+
+def generate_date_range(start_date, end_date, step):
+    dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        if step == "month":
+            break
+
+        dates.append(current_date.strftime("%Y-%m-%dT%H:%M:%S"))
+
+        if step == "day":
+            current_date += timedelta(days=1)
+        if step == "hour":
+            current_date += timedelta(hours=1)
+    return dates
 
 
 def payments(dt_from, dt_upto, group_type):
@@ -39,7 +55,17 @@ def payments(dt_from, dt_upto, group_type):
 
     result = list(collection.aggregate(pipeline))
 
-    dataset = [item['total'] for item in result]
-    labels = [f"{item['_id']}{end}" for item in result]
+    data = {f"{item['_id']}{end}": item['total'] for item in result}
+    if not group_type == "month":
+        date_list = generate_date_range(dt_from, dt_upto, group_type)
+
+        labels = []
+        dataset = []
+        for date in date_list:
+            labels.append(date)
+            dataset.append(data.get(date, 0))
+    else:
+        dataset = [item['total'] for item in result]
+        labels = [f"{item['_id']}{end}" for item in result]
 
     return {"dataset": dataset, "labels": labels}
