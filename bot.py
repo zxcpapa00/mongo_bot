@@ -17,13 +17,12 @@ async def start_command(message: types.Message):
 
 @dp.message()
 async def get_payments(message: types.Message):
-    user_message = message.text
-    message_dict = dict(json.loads(user_message))
+    message_dict = json.loads(message.text)
     dt_from = message_dict.get("dt_from")
     dt_upto = message_dict.get("dt_upto")
     group_type = message_dict.get("group_type")
     result = payments(dt_from, dt_upto, group_type)
-    await message.answer(text=str(result))
+    await message.answer(text=str(result).replace("'", '"'))
 
 
 async def main():
